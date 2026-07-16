@@ -338,7 +338,7 @@ class Plugin(pwem.Plugin):
 
         epidopeHome = cls.getVar(EPIDOPE_DIC['home'])
         installer.addCommand(
-            f'git clone --depth 1 {EPIDOPE_REPO_URL}',
+            'git clone --depth 1 https://github.com/rnajena/EpiDope.git',
             'EPIDOPE_CLONED'
         ).addCommand(
             f'cd EpiDope && conda env create -f epidope.yml -p {epidopeHome}',
