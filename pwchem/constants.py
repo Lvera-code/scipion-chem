@@ -40,6 +40,12 @@ DEAP_DIC =      {'name': 'deap',        'version': '1.4',           'home': 'DEA
 RANX_DIC =     {'name': 'ranx',      'version': '0.3.20',           'home': 'RANKX_HOME'}
 POSEB_DIC =     {'name': 'posebusters',      'version': '0.6.3',           'home': 'POSEB_HOME'}
 SCORCH2_DIC = {'name': 'scorch2', 'version': '1.0', 'home': 'SCORCH2_HOME'}
+# EpiDope (https://github.com/rnajena/EpiDope) is open source (MIT license),
+# but pins an old dependency stack (Python 3.6, TensorFlow 1.13, ELMo/AllenNLP)
+# that must be resolved exactly as pinned in its own epidope.yml: never
+# install its dependencies by hand.
+EPIDOPE_DIC =   {'name': 'epidope',     'version': '1.0',           'home': 'EPIDOPE_HOME'}
+EPIDOPE_REPO_URL = 'https://github.com/rnajena/EpiDope.git'
 
 #Autoligand
 POCKET_ATTRIBUTES_MAPPING = {'Pocket Score': 'score', 'Drug Score': 'druggability', 'nPoints': 'nPoints',

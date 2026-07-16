@@ -26,7 +26,7 @@ from pyworkflow.tests import DataSet, setupTestProject
 
 # Scipion chem imports
 from pwchem.tests import TestDefineSequenceROIs
-from pwchem.protocols import ProtDefineSeqROI, ProtDefineMultiEpitope, ProtModifyMultiEpitope
+from pwchem.protocols import ProtDefineSeqROI, ProtDefineMultiEpitope, ProtModifyMultiEpitope, ProtEpiDopePrediction
 from pwchem.utils import assertHandle
 
 defSeqROIsSeq = '''1) Residues: {"index": "1-10", "residues": "MFVFLVLLPL", "desc": "None"}
@@ -111,4 +111,23 @@ class TestModifyMultiEpitope(TestDefineMultiEpitope):
 		self._waitOutput(protMod, 'outputROIs', sleepTime=5)
 		assertHandle(self.assertIsNotNone, getattr(protMod, 'outputROIs', None),
 								 cwd=protMod.getWorkingDir())
+
+class TestEpiDopePrediction(TestDefineSequenceROIs):
+	'''Requires a local EpiDope installation (see Plugin.addEpiDopePackage): skip if
+	EPIDOPE_HOME is not configured / the environment was not installed.'''
+
+	@classmethod
+	def _runEpiDope(cls, inProt):
+		protEpiDope = cls.newProtocol(ProtEpiDopePrediction)
+		protEpiDope.inputSequence.set(inProt)
+		protEpiDope.inputSequence.setExtended('outputSequence')
+
+		cls.proj.launchProtocol(protEpiDope, wait=False)
+		return protEpiDope
+
+	def test(self):
+		protEpiDope = self._runEpiDope(inProt=self.protImportSeq)
+		self._waitOutput(protEpiDope, 'outputROIs', sleepTime=5)
+		assertHandle(self.assertIsNotNone, getattr(protEpiDope, 'outputROIs', None),
+								 cwd=protEpiDope.getWorkingDir())
 
