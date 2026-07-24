@@ -65,6 +65,7 @@ class Plugin(pwem.Plugin):
 
         cls.addSCORCHenv(env)
         cls.addPoseBustersPackage(env)
+        cls.addEpiDopePackage(env)
 
     @classmethod
     def _defineVariables(cls):
@@ -78,6 +79,7 @@ class Plugin(pwem.Plugin):
         cls._defineEmVar(SHAPEIT_DIC['home'], cls.getEnvName(SHAPEIT_DIC))
         cls._defineEmVar(POSEB_DIC['home'], cls.getEnvName(POSEB_DIC))
         cls._defineEmVar(SCORCH2_DIC['home'], cls.getEnvName(SCORCH2_DIC))
+        cls._defineEmVar(EPIDOPE_DIC['home'], cls.getEnvName(EPIDOPE_DIC))
 
         # Common enviroments
         cls._defineVar('RDKIT_ENV_ACTIVATION', cls.getEnvActivationCommand(RDKIT_DIC))
@@ -322,6 +324,29 @@ class Plugin(pwem.Plugin):
         )
 
         installer.addPackage(env, dependencies=['mamba', 'conda'], default=default)
+
+    @classmethod
+    def addEpiDopePackage(cls, env, default=True):
+        # EpiDope pins an old, fragile dependency stack (Python 3.6,
+        # TensorFlow 1.13, ELMo/AllenNLP): the environment MUST be created
+        # exactly from the epidope.yml shipped in its own repo, installed
+        # directly at EPIDOPE_HOME via '-p' so downstream code can rely on a
+        # stable '<EPIDOPE_HOME>/bin/epidope' path regardless of where conda
+        # keeps its named environments.
+        installer = InstallHelper(EPIDOPE_DIC['name'], packageHome=cls.getVar(EPIDOPE_DIC['home']),
+                                  packageVersion=EPIDOPE_DIC['version'])
+
+        epidopeHome = cls.getVar(EPIDOPE_DIC['home'])
+        installer.addCommand(
+            'git clone --depth 1 https://github.com/rnajena/EpiDope.git',
+            'EPIDOPE_CLONED'
+        ).addCommand(
+            f'cd EpiDope && conda env create -f epidope.yml -p {epidopeHome}',
+            'EPIDOPE_ENV_CREATED'
+        ).addCommand(
+            f'touch {EPIDOPE_DIC["name"]}_installed',
+            f'{EPIDOPE_DIC["name"]}_installed'
+        ).addPackage(env, dependencies=['conda', 'git'], default=default)
 
     ##################### RUN CALLS ######################
     @classmethod
