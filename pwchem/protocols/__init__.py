@@ -75,6 +75,7 @@ from pwchem.protocols.Sequences.protocol_define_sequence_roi import ProtDefineSe
 from pwchem.protocols.Sequences.protocol_import_sequence_roi import ProtImportSeqROI
 from pwchem.protocols.Sequences.protocol_calculate_conservation import ProtSeqCalculateConservation
 from pwchem.protocols.Sequences.protocol_epidope import ProtEpiDopePrediction
+from pwchem.protocols.Sequences.protocol_lanlcatnap_crossref import ProtLANLCATNAPCrossref
 from pwchem.protocols.Sequences.protocol_extract_attribute_ROIs import ProtExtractSeqsROI
 from pwchem.protocols.Sequences.protocol_operate_sequence_rois import ProtOperateSeqROI
 from pwchem.protocols.Sequences.protocol_map_sequence_structure_ROIs import ProtMapSequenceROI

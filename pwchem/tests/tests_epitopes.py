@@ -26,7 +26,8 @@ from pyworkflow.tests import DataSet, setupTestProject
 
 # Scipion chem imports
 from pwchem.tests import TestDefineSequenceROIs
-from pwchem.protocols import ProtDefineSeqROI, ProtDefineMultiEpitope, ProtModifyMultiEpitope, ProtEpiDopePrediction
+from pwchem.protocols import ProtDefineSeqROI, ProtDefineMultiEpitope, ProtModifyMultiEpitope, \
+	ProtEpiDopePrediction, ProtLANLCATNAPCrossref
 from pwchem.utils import assertHandle
 
 defSeqROIsSeq = '''1) Residues: {"index": "1-10", "residues": "MFVFLVLLPL", "desc": "None"}
@@ -130,4 +131,26 @@ class TestEpiDopePrediction(TestDefineSequenceROIs):
 		self._waitOutput(protEpiDope, 'outputROIs', sleepTime=5)
 		assertHandle(self.assertIsNotNone, getattr(protEpiDope, 'outputROIs', None),
 								 cwd=protEpiDope.getWorkingDir())
+
+class TestLANLCATNAPCrossref(TestDefineMultiEpitope):
+	'''Requires LANL_AB_ALL_PATH to be configured (manually downloaded, see
+	ProtLANLCATNAPCrossref/constants.py): skip if not set.'''
+
+	@classmethod
+	def _runLANLCATNAP(cls, protROIs):
+		protCrossref = cls.newProtocol(ProtLANLCATNAPCrossref)
+		protCrossref.inputROIs.set(protROIs)
+		protCrossref.inputROIs.setExtended('outputROIs')
+
+		cls.proj.launchProtocol(protCrossref, wait=False)
+		return protCrossref
+
+	def test(self):
+		protsROIs = self._runDefSeqROIs(inProt=self.protImportSeq)
+		self._waitOutput(protsROIs, 'outputROIs', sleepTime=5)
+
+		protCrossref = self._runLANLCATNAP(protsROIs)
+		self._waitOutput(protCrossref, 'outputROIs', sleepTime=5)
+		assertHandle(self.assertIsNotNone, getattr(protCrossref, 'outputROIs', None),
+								 cwd=protCrossref.getWorkingDir())
 
